@@ -249,5 +249,32 @@ Related issue: https://github.com/NixOS/nix-mode/issues/94"
   "Proper indentation of let expressions."
   (with-nix-mode-test ("issue-128.nix" :indent 'nix-indent-line)))
 
+(defmacro nix-mode-test (contents &optional debug &rest body)
+  "Create temp buffer in `nix-mode' inserting CONTENTS.
+BODY is code to be executed within the temp buffer.  Point is
+ at the end of buffer."
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+       (insert ,contents)
+       (nix-mode)
+       (when ,debug
+	 (switch-to-buffer (current-buffer))
+       ,@body)))
+
+(ert-deftest nix-mode-block-comment-test-8dycMu ()
+  "Test block-comments."
+  (nix-mode-test
+      "Block comments
+can span multiple lines."
+    nil
+    (goto-char (point-max))
+    (push-mark)
+    (goto-char (point-min)) 
+    (nix-block-comment)
+    (goto-char (point-max))
+    (should (looking-back "*/" (line-beginning-position)))
+    (goto-char (point-min))
+    (should (looking-at "/*"))))
+
 (provide 'nix-mode-tests)
 ;;; nix-mode-tests.el ends here

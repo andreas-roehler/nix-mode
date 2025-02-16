@@ -1,0 +1,13 @@
+(defun nix-block-comment ()
+  "Insert a block-comment."
+  (interactive "*")
+  (let ((beg (region-beginning))
+        (end (copy-marker (region-end))))
+    (goto-char beg)
+    (insert "/*")
+    (unless (eolp)
+      (newline)
+      (goto-char end)
+      (unless (and (bolp) (looking-at "[ \t\r]*$"))
+        (newline 1)
+        (insert "*/")))))
